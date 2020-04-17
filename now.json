@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/", "dest": "api/handler.ts" },
-    { "src": "/graphql", "dest": "api/handler.ts" },
-    { "src": "/*", "dest": "api/handler.ts" }
+  "functions": {
+    "api/handler.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },  
+  "rewrites": [
+    { "source": "/", "destination": "/api/handler" },
+    { "source": "/graphql", "destination": "/api/handler" }
   ]
 }
