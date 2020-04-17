@@ -12,7 +12,9 @@ interface AdminCredentials {
 
 export default class OdooXmlrpc {
   host: string;
+
   database: string;
+
   adminCredentials: AdminCredentials;
 
   constructor(config: {

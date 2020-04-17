@@ -5,8 +5,7 @@
     "yarn": "1.21.x"
   },
   "scripts": {
-    "lint": "eslint ./api/handler.ts && tsc --noemit",
-    "generate-types": "graphql-codegen --config codegen.yml"
+    "lint": "eslint --ext ts --ext js . && tsc --noemit"
   },
   "dependencies": {
     "@now/node": "1.5.1",
@@ -15,6 +14,7 @@
     "@types/xmlrpc": "1.3.5",
     "apollo-server-micro": "2.12.0",
     "eslint-plugin-eslint-comments": "3.1.2",
+    "graphql-tools": "5.0.0",
     "jsonwebtoken": "8.5.1",
     "micro-cors": "0.1.1",
     "node-fetch": "2.6.0",
