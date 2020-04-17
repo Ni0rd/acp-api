@@ -5,6 +5,7 @@ node_modules/
 .eslintrc.js 
 .gitignore
 .nvmrc
-.prettierrc.js
+.prettierrc
 jest.config.js
 README.md
+renovate.json
