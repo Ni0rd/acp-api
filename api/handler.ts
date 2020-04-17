@@ -16,7 +16,12 @@ const resolvers = {
   },
 };
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+  playground: true,
+});
 
 // Apollo cannot handle OPTIONS requests, ignore them
 // @see: https://github.com/apollographql/apollo-server/issues/2473
