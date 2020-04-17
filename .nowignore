@@ -1,0 +1,10 @@
+dist/
+node_modules/
+.env.example
+.eslintignore
+.eslintrc.js 
+.gitignore
+.nvmrc
+.prettierrc.js
+jest.config.js
+README.md

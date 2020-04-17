@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/", "dest": "api/handler.ts" },
+    { "src": "/graphql", "dest": "api/handler.ts" },
+    { "src": "/*", "dest": "api/handler.ts" }
+  ]
+}
