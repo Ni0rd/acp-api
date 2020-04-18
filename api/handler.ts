@@ -15,26 +15,35 @@ if (!process.env.WP_API_ENDPOINT) {
 interface Context {
   req: IncomingMessage;
   res: ServerResponse;
-  token?: {};
+  userId: number | null;
+}
+
+interface TokenPayload {
+  userId: number;
 }
 
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context(ctx: Context): Context {
+    ctx.userId = null;
+
     const { authorization } = ctx.req.headers;
     const token = authorization ? authorization.split(' ').pop() : null;
-    ctx.token = {};
+
     if (token) {
       try {
-        ctx.token = jsonwebtoken.verify(
+        const decoded: TokenPayload = jsonwebtoken.verify(
           token,
           process.env.JWT_SECRET as string
-        );
+        ) as any;
+        ctx.userId = decoded.userId;
       } catch (err) {
         // Ignore errors
+        console.log(err);
       }
     }
+
     return ctx;
   },
   introspection: true,
