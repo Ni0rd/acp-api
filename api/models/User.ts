@@ -1,13 +1,20 @@
 import { models as OdooModels, methods as OdooMethods } from '../lib/odoo';
 import odoo from '../odoo';
 import { login as wordpressLogin } from '../lib/wordpress';
-import UserProfile from './UserProfile';
 
 export default class User {
-  id: number | null;
+  id?: number;
+
+  firstname?: string;
+
+  lastname?: string;
+
+  email?: string;
 
   constructor(id?: number) {
-    this.id = id || null;
+    if (id) {
+      this.id = id;
+    }
   }
 
   static async login(credentials: {
@@ -70,7 +77,7 @@ export default class User {
     });
   }
 
-  async getProfile(): Promise<UserProfile | null> {
+  async fetchData(): Promise<void> {
     const [data] = await odoo.executeKwAsAdmin({
       model: OdooModels.USERS,
       method: OdooMethods.READ,
@@ -78,12 +85,10 @@ export default class User {
       options: { fields: ['name', 'email'] },
     });
     if (!data) {
-      return null;
+      return;
     }
-    return new UserProfile({
-      email: data.email,
-      firstname: data.name.split(' ')[0],
-      lastname: data.name.split(' ')[1],
-    });
+    this.email = data.email;
+    const name = data.name || '';
+    [this.firstname, this.lastname] = name.split(' ');
   }
 }

@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-micro';
 
 export default gql`
   type Query {
-    profile: User!
+    me: User!
     activities: String!
     activity: String!
     plans: String!
@@ -17,7 +17,7 @@ export default gql`
 
   type AuthPayload {
     token: String!
-    profile: User!
+    me: User!
   }
 
   type User {

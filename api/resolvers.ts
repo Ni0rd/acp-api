@@ -2,16 +2,16 @@ import { IResolvers } from 'graphql-tools';
 import { AuthenticationError } from 'apollo-server-micro';
 import jsonwebtoken from 'jsonwebtoken';
 import User from './models/User';
-import UserProfile from './models/UserProfile';
 
 export default {
   Query: {
-    profile: async (root, args, ctx): Promise<UserProfile | null> => {
+    me: async (root, args, ctx): Promise<User | null> => {
       if (!ctx.userId) {
         throw new AuthenticationError('authentication required');
       }
       const user = new User(ctx.userId);
-      return user.getProfile();
+      await user.fetchData();
+      return user;
     },
     activities: (): string => 'Hello!',
     activity: (): string => 'Hello!',
@@ -26,7 +26,7 @@ export default {
       args: { email: string; password: string }
     ): Promise<{
       token: string;
-      profile: UserProfile;
+      me: User;
     }> {
       const user = await User.login({
         username: args.email,
@@ -35,10 +35,7 @@ export default {
       if (!user) {
         throw new AuthenticationError('invalid credentials');
       }
-      const profile = await user.getProfile();
-      if (!profile) {
-        throw new Error('profile not found');
-      }
+      await user.fetchData();
       const token = jsonwebtoken.sign(
         {
           userId: user.id,
@@ -50,7 +47,7 @@ export default {
       );
       return {
         token,
-        profile,
+        me: user,
       };
     },
   },
