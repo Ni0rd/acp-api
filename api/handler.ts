@@ -40,7 +40,6 @@ const apolloServer = new ApolloServer({
         ctx.userId = decoded.userId;
       } catch (err) {
         // Ignore errors
-        console.log(err);
       }
     }
 
