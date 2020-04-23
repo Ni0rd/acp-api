@@ -1,6 +1,18 @@
 import { gql } from 'apollo-server-micro';
 
 export default gql`
+  type User {
+    id: ID!
+    firstname: String!
+    lastname: String!
+    email: String!
+  }
+
+  type AuthPayload {
+    token: String!
+    me: User!
+  }
+
   type Query {
     me: User!
     activities: String!
@@ -13,17 +25,5 @@ export default gql`
 
   type Mutation {
     login(email: String!, password: String!): AuthPayload
-  }
-
-  type AuthPayload {
-    token: String!
-    me: User!
-  }
-
-  type User {
-    id: ID!
-    firstname: String!
-    lastname: String!
-    email: String!
   }
 `;
