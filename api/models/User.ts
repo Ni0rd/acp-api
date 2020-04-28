@@ -1,20 +1,33 @@
-import { models as OdooModels, methods as OdooMethods } from '../lib/odoo';
-import odoo from '../odoo';
+import userOrdersData from '../../data/userOrders';
+import userBookingsData from '../../data/userBookings';
+import {
+  models as OdooModels,
+  methods as OdooMethods,
+} from '../lib/odoo-xmlrpc';
 import { login as wordpressLogin } from '../lib/wordpress';
+import odoo from '../odoo';
+import Order from './Order';
+import Booking from './Booking';
 
 export default class User {
-  id?: number;
+  id: number;
 
-  firstname?: string;
+  firstname: string;
 
-  lastname?: string;
+  lastname: string;
 
-  email?: string;
+  email: string;
 
-  constructor(id?: number) {
-    if (id) {
-      this.id = id;
-    }
+  constructor(data: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+  }) {
+    this.id = data.id;
+    this.firstname = data.firstname;
+    this.lastname = data.lastname;
+    this.email = data.email;
   }
 
   static async login(credentials: {
@@ -22,9 +35,11 @@ export default class User {
     password: string;
   }): Promise<User | null> {
     const userId = await odoo.authenticate(credentials);
+    // The credentials matched
     if (userId) {
-      return new User(userId);
+      return User.getOne(userId);
     }
+    // The credentials did not match an Odoo user, run the Wordpress Login Migration flow.
     return User.processWordpressLoginMigration(credentials);
   }
 
@@ -32,6 +47,7 @@ export default class User {
     username: string;
     password: string;
   }): Promise<User | null> {
+    // Attempt to login to WP
     const validCredentials = await wordpressLogin(
       process.env.WP_API_ENDPOINT as string,
       credentials
@@ -50,8 +66,16 @@ export default class User {
       return null;
     }
 
-    const user = new User(userId);
+    const user = await User.getOne(userId);
+
+    // Should not happen.
+    if (!user) {
+      return null;
+    }
+
+    // Update Odoo user password
     await user.updatePassword(credentials.password);
+
     return user;
   }
 
@@ -64,8 +88,8 @@ export default class User {
     return userId;
   }
 
-  updatePassword(newPassword: string): Promise<any> {
-    return odoo.executeKwAsAdmin({
+  async updatePassword(newPassword: string): Promise<void> {
+    await odoo.executeKwAsAdmin({
       model: OdooModels.USERS,
       method: OdooMethods.WRITE,
       data: [
@@ -77,18 +101,46 @@ export default class User {
     });
   }
 
-  async fetchData(): Promise<void> {
+  static async getOne(userId: number): Promise<User | null> {
     const [data] = await odoo.executeKwAsAdmin({
       model: OdooModels.USERS,
       method: OdooMethods.READ,
-      data: [this.id],
+      data: [userId],
       options: { fields: ['name', 'email'] },
     });
     if (!data) {
-      return;
+      return null;
     }
-    this.email = data.email;
     const name = data.name || '';
-    [this.firstname, this.lastname] = name.split(' ');
+    const [firstname, lastname] = name.split(' ');
+    return new User({
+      id: userId,
+      email: data.email,
+      firstname,
+      lastname,
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getOrders(): Promise<Array<Order>> {
+    const orders = userOrdersData.map((data) => {
+      return new Order(data);
+    });
+    return Promise.resolve(orders);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getBookings(): Promise<Array<Booking>> {
+    const bookings = userBookingsData.map((data) => {
+      return new Booking(data);
+    });
+    return Promise.resolve(bookings);
+  }
+
+  async getEventBooking(eventId: number): Promise<Booking | undefined> {
+    const bookings = await this.getBookings();
+    return bookings.find((aBooking) => {
+      return aBooking.event.id === eventId;
+    });
   }
 }

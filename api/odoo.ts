@@ -1,4 +1,4 @@
-import Odoo from './lib/odoo';
+import Odoo from './lib/odoo-xmlrpc';
 
 export default new Odoo({
   host: process.env.ODOO_HOST as string,
