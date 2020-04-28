@@ -1,6 +1,5 @@
 import xmlrpc from 'xmlrpc';
-import models from './models';
-import methods from './methods';
+import { models, methods } from './types';
 
 export { models, methods };
 
