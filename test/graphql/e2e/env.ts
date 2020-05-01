@@ -1,3 +1,3 @@
-import { config } from 'dotenv';
+import '../../../api/env';
 
-config();
+process.env.JWT_SECRET = '123456abcdef';
