@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`login mutation returns a LoginResult 1`] = `
+Object {
+  "data": Object {
+    "login": Object {
+      "__typename": "LoginResult",
+      "me": Object {
+        "__typename": "User",
+        "email": "email@example.com",
+        "firstname": "John",
+        "id": 1,
+        "lastname": "Doe",
+      },
+      "token": "abcdefg",
+    },
+  },
+}
+`;

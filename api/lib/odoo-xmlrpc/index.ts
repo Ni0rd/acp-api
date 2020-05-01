@@ -1,47 +1,42 @@
 import xmlrpc from 'xmlrpc';
-import { models, methods } from './types';
-
-export { models, methods };
-
-interface AdminCredentials {
-  userId: number;
-  username: string;
-  password: string;
-}
 
 export default class OdooXmlrpc {
-  host: string;
+  private config: OdooXmlrpc.Config;
 
-  database: string;
+  private clients: {
+    [path: string]: xmlrpc.Client;
+  };
 
-  adminCredentials: AdminCredentials;
-
-  constructor(config: {
-    host: string;
-    database: string;
-    adminCredentials: AdminCredentials;
-  }) {
-    this.host = config.host;
-    this.database = config.database;
-    this.adminCredentials = config.adminCredentials;
+  constructor(config: OdooXmlrpc.Config) {
+    this.config = config;
+    this.clients = {};
   }
 
-  createClient(options: { path: string }): xmlrpc.Client {
+  private createClient(options: { path: string }): xmlrpc.Client {
+    if (this.clients[options.path]) {
+      return this.clients[options.path];
+    }
     const clientOptions = {
-      host: this.host,
+      host: this.config.host,
       ...options,
     };
-    return xmlrpc.createSecureClient(clientOptions);
+    const client = xmlrpc.createSecureClient(clientOptions);
+    this.clients[options.path] = client;
+    return client;
   }
 
-  authenticate(params: {
-    username: string;
-    password: string;
-  }): Promise<number | null> {
+  authenticate(
+    credentials: OdooXmlrpc.UserCredentials
+  ): Promise<number | null> {
     const client = this.createClient({
       path: '/xmlrpc/2/common',
     });
-    const methodParams = [this.database, params.username, params.password, {}];
+    const methodParams = [
+      this.config.database,
+      credentials.username,
+      credentials.password,
+      {},
+    ];
     return new Promise((resolve, reject) => {
       client.methodCall('authenticate', methodParams, (err, userId) => {
         if (err) {
@@ -53,19 +48,12 @@ export default class OdooXmlrpc {
     });
   }
 
-  executeKw(params: {
-    userId: number;
-    password: string;
-    model: string;
-    method: string;
-    data: any;
-    options?: {};
-  }): Promise<any> {
+  executeKw(params: OdooXmlrpc.KwParams): Promise<OdooXmlrpc.KwResponse> {
     const client = this.createClient({
       path: '/xmlrpc/2/object',
     });
     const methodParams = [
-      this.database,
+      this.config.database,
       params.userId,
       params.password,
       params.model,
@@ -84,16 +72,40 @@ export default class OdooXmlrpc {
     });
   }
 
-  executeKwAsAdmin(params: {
-    model: string;
-    method: string;
-    data: any;
-    options?: {};
-  }): Promise<any> {
+  executeKwAsAdmin(
+    params: OdooXmlrpc.KwAsAdminParams
+  ): Promise<OdooXmlrpc.KwResponse> {
     return this.executeKw({
-      userId: this.adminCredentials.userId,
-      password: this.adminCredentials.password,
+      userId: this.config.adminCredentials.userId,
+      password: this.config.adminCredentials.password,
       ...params,
     });
+  }
+
+  executeReadAsAdmin(
+    params: OdooXmlrpc.ReadParams
+  ): Promise<OdooXmlrpc.ReadResponse> {
+    return this.executeKwAsAdmin({
+      method: 'read',
+      model: params.model,
+      data: params.ids,
+      options: {
+        fields: params.fields,
+      },
+    }) as Promise<OdooXmlrpc.ReadResponse>;
+  }
+
+  executeSearchAsAdmin(
+    params: OdooXmlrpc.SearchParams
+  ): Promise<OdooXmlrpc.SearchResponse> {
+    return this.executeKwAsAdmin({
+      method: 'search',
+      model: params.model,
+      data: [],
+      options: {
+        offset: params.options?.offset || 0,
+        limit: params.options?.limit || this.config.defaultLimit,
+      },
+    }) as Promise<OdooXmlrpc.SearchResponse>;
   }
 }

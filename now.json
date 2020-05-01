@@ -1,13 +1,13 @@
 {
   "version": 2,
   "functions": {
-    "api/graphql/handler.ts": {
+    "api/handler.ts": {
       "memory": 1024,
       "maxDuration": 10
     }
   },  
   "rewrites": [
-    { "source": "/", "destination": "/api/graphql/index" },
-    { "source": "/graphql", "destination": "/api/graphql/index" }
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/graphql", "destination": "/api/index" }
   ]
 }

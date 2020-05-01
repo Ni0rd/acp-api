@@ -6,3 +6,6 @@ dist
 
 # don't lint nyc coverage output
 coverage
+
+# don't lint codegen file
+./api/@types/resolverTypes.ts

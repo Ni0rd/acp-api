@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`me query returns the User 1`] = `
+Object {
+  "data": Object {
+    "me": Object {
+      "__typename": "User",
+      "email": "john.doe@example.net",
+      "firstname": "John",
+      "id": 1,
+      "lastname": "Doe",
+    },
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false,
+}
+`;
