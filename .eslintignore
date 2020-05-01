@@ -8,4 +8,4 @@ dist
 coverage
 
 # don't lint codegen file
-./api/@types/resolverTypes.ts
+api/@types/resolverTypes.ts

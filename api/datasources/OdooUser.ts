@@ -16,8 +16,6 @@ export default class OdooUserDataSource<TContext> extends OdooDataSource<
   TContext
 > {
   async getUserById(userId: number): Promise<User | null> {
-    console.log('ouin ouin');
-
     const [data] = (await this.odoo.executeReadAsAdmin({
       model: 'res.users',
       ids: [userId],

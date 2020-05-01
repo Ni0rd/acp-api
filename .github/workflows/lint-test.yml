@@ -1,4 +1,4 @@
-name: Lint
+name: Lint and Test
 
 on:
   push:
@@ -28,3 +28,17 @@ jobs:
           path: '.'
           key: ${{ github.sha }}
       - run: yarn lint
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/cache@v1
+        id: restore-build
+        with:
+          path: '.'
+          key: ${{ github.sha }}
+      - run: yarn lint:coverage
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
