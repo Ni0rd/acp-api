@@ -12,3 +12,7 @@
 - Install dependencies: `yarn`
 - Pull Zeit Now Development Environment Variables `now env pull`
 - Start locally: `yarn now dev`
+
+## Authors
+
+- David Billamboz @davidbillamboz
