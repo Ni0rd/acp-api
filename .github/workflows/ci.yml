@@ -1,0 +1,52 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    types: [opened, synchronize]  
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Nodejs with nvm
+        shell: bash -l {0}
+        run: nvm install
+
+      - name: Display nodejs version
+        run: node --version
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v1
+        id: node-modules-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --check-files
+
+      - name: Lint code
+        run: yarn lint
+
+      - name: Run tests with coverage
+        run: yarn test:coverage
+
+      - name: Publish coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Publish coverage to Code Climate
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: echo ""
