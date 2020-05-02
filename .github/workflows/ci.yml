@@ -13,8 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Nodejs
-        uses: dcodeIO/setup-node-nvm@master
+      - name: Install Nodejs with nvm
+        shell: bash -l {0}
+        run: nvm install
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
