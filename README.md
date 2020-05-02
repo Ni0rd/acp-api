@@ -5,7 +5,7 @@
     <img src="https://img.shields.io/codecov/c/gh/amis-du-centre-pompidou/acp-api?style=for-the-badge">
   </a>
   <a aria-label="Build status" href="https://github.com/amis-du-centre-pompidou/acp-api">
-    <img src="https://img.shields.io/github/workflow/status/amis-du-centre-pompidou/acp-api/Lint and Test?style=for-the-badge">
+    <img src="https://img.shields.io/github/workflow/status/amis-du-centre-pompidou/acp-api/Continuous Integration?style=for-the-badge">
   </a>
 </p>
 
