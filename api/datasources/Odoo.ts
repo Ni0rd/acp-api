@@ -60,7 +60,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   // Addresses
 
-  async getAddressesByIds(ids: number[]): Promise<OdooAddress[]> {
+  private async getAddressesByIds(ids: number[]): Promise<OdooAddress[]> {
     if (!ids.length) {
       return [];
     }
@@ -77,7 +77,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   // Events
 
-  async getEventsByIds(ids: number[]): Promise<OdooEvent[]> {
+  private async getEventsByIds(ids: number[]): Promise<OdooEvent[]> {
     if (!ids.length) {
       return [];
     }
@@ -114,7 +114,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   // Invoices
 
-  async getInvoicesByIds(ids: number[]): Promise<OdooInvoice[]> {
+  private async getInvoicesByIds(ids: number[]): Promise<OdooInvoice[]> {
     return this.odoo.executeReadAsAdmin({
       model: 'account.move',
       ids,
@@ -132,7 +132,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   // Orders
 
-  async getOrdersByIds(ids: number[]): Promise<OdooOrder[]> {
+  private async getOrdersByIds(ids: number[]): Promise<OdooOrder[]> {
     if (!ids.length) {
       return [];
     }
@@ -170,7 +170,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   // Users
 
-  async getUsersByIds(ids: number[]): Promise<OdooUser[]> {
+  private async getUsersByIds(ids: number[]): Promise<OdooUser[]> {
     if (!ids.length) {
       return [];
     }
