@@ -29,7 +29,7 @@ jest.mock('../../../api/datasources/Odoo', () => {
   return jest.fn().mockImplementation(() => {
     return {
       getEventById: jest.fn().mockResolvedValue(odooEvent),
-      getAddressById: jest.fn().mockResolvedValue(odooAddress),
+      getEventAddress: jest.fn().mockResolvedValue(odooAddress),
     };
   });
 });

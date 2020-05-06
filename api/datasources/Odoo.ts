@@ -149,6 +149,16 @@ export default class OdooDataSource<TContext> extends DataSource {
     return this.loaders.events.load(eventId);
   }
 
+  // Event Address
+
+  async getEventAddress(eventId: number): Promise<OdooAddress | null> {
+    const odooEvent = await this.getEventById(eventId);
+    if (!(odooEvent && odooEvent.address_id)) {
+      return null;
+    }
+    return this.getAddressById(odooEvent.address_id);
+  }
+
   // Invoices
 
   private async getInvoicesByIds(ids: number[]): Promise<OdooInvoice[]> {

@@ -131,13 +131,7 @@ export const resolvers: Resolvers = {
       args,
       ctx: Context
     ): Promise<Address | null> => {
-      const odooEvent = await ctx.dataSources.odoo.getEventById(id);
-      if (!(odooEvent && odooEvent.address_id)) {
-        return null;
-      }
-      const odooAddress = await ctx.dataSources.odoo.getAddressById(
-        odooEvent.address_id
-      );
+      const odooAddress = await ctx.dataSources.odoo.getEventAddress(id);
       if (!odooAddress) {
         return null;
       }
