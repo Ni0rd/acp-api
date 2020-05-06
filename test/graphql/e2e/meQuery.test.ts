@@ -1,6 +1,8 @@
 import './env';
 import gql from 'graphql-tag';
 import { addGlobalMocks, initApollo } from './helpers';
+import { OdooUser } from '../../../api/@types/odoo';
+import { TokenPayload } from '../../../api/@types/types';
 
 addGlobalMocks();
 const getClient = initApollo();
@@ -8,20 +10,20 @@ const getClient = initApollo();
 jest.mock('../../../api/utils/auth', () => {
   return {
     getDecodedTokenFromHeaders: jest.fn().mockReturnValue({
-      userId: 1,
-    }),
+      odooUserId: 1,
+    } as TokenPayload),
   };
 });
 
-jest.mock('../../../api/datasources/OdooUser', () => {
+jest.mock('../../../api/datasources/Odoo', () => {
+  const odooUser: OdooUser = {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.net',
+  };
   return jest.fn().mockImplementation(() => {
     return {
-      getUserById: jest.fn().mockResolvedValue({
-        id: 1,
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john.doe@example.net',
-      }),
+      getUserById: jest.fn().mockResolvedValue(odooUser),
     };
   });
 });

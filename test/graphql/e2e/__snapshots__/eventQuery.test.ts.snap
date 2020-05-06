@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`event query returns the Event 1`] = `
+Object {
+  "data": Object {
+    "event": Object {
+      "__typename": "Event",
+      "address": Object {
+        "__typename": "Address",
+        "country": "France",
+        "name": "address name",
+        "state": "",
+        "street": "1, rue de Montmartre",
+        "street2": "",
+        "town": "Paris",
+        "zipCode": "75001",
+      },
+      "dateBegin": "2020-01-05T00:00:00.000Z",
+      "dateEnd": "2020-01-05T00:00:00.000Z",
+      "description": "the event description",
+      "id": 1,
+      "image": null,
+      "planCategoriesIds": Array [],
+      "title": "fake event",
+      "typeId": 1,
+    },
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false,
+}
+`;

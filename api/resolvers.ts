@@ -7,9 +7,22 @@ import {
   URLResolver,
   HexColorCodeResolver,
 } from 'graphql-scalars';
-import { Resolvers, User, LoginResult, Order } from './@types/resolverTypes';
+import {
+  Maybe,
+  Resolvers,
+  User,
+  LoginResult,
+  Order,
+  Event,
+  Address,
+  Invoice,
+} from './@types/resolverTypes';
 import { Context } from './@types/types';
 import { login, signToken } from './utils/auth';
+import { odooUserReducer } from './reducers/odooUser';
+import { odooOrderReducer, odooInvoiceReducer } from './reducers/odooOrder';
+import { odooEventReducer } from './reducers/odooEvent';
+import { odooAddressReducer } from './reducers/odooAddress';
 
 export const resolvers: Resolvers = {
   PositiveInt: PositiveIntResolver,
@@ -20,23 +33,26 @@ export const resolvers: Resolvers = {
   URL: URLResolver,
   Query: {
     me: async (root, args, ctx: Context): Promise<User> => {
-      if (!ctx.userId) {
+      if (!ctx.odooUserId) {
         throw new AuthenticationError('authentication required');
       }
-      const user = await ctx.dataSources.odooUser.getUserById(ctx.userId);
-      if (!user) {
+      const odooUser = await ctx.dataSources.odoo.getUserById(ctx.odooUserId);
+      if (!odooUser) {
         throw new ApolloError(
-          `The user with the id ${ctx.userId} does not exist.`,
+          `The user with the id ${ctx.odooUserId} does not exist.`,
           'NOT_FOUND'
         );
       }
-      return user;
+      return odooUserReducer(odooUser);
     },
-    myOrders: async (root, { lang }, ctx: Context): Promise<Order[]> => {
-      if (!ctx.userId) {
+    myOrders: async (root, args, ctx: Context): Promise<Order[]> => {
+      if (!ctx.odooUserId) {
         throw new AuthenticationError('authentication required');
       }
-      return ctx.dataSources.odooOrder.getUserOrders(lang, ctx.userId);
+      const odooOrders = await ctx.dataSources.odoo.getUserOrders(
+        ctx.odooUserId
+      );
+      return odooOrders.map(odooOrderReducer);
     },
     // myEvents: (user, { lang }, ctx: Context) => {
     //   if (!ctx.userId) {
@@ -71,41 +87,56 @@ export const resolvers: Resolvers = {
     // eventTypes: (root, { lang }, ctx: Context): Promise<Array<EventType>> => {
     //   return ctx.dataSources.odooEventType.getEventTypes(lang);
     // },
-    // events: async (
-    //   root,
-    //   { lang, filters },
-    //   ctx: Context
-    // ): Promise<Array<Event>> => {
-    //   return ctx.dataSources.odooEvent.getEvents(lang, filters);
-    // },
-    // event: async (root, { lang, eventId }, ctx: Context): Promise<Event> => {
-    //   const event = await ctx.dataSources.odooEvent.getEventById(lang, eventId);
-    //   if (!event) {
-    //     throw new ApolloError(
-    //       `The event with the id ${eventId} does not exist.`,
-    //       'NOT_FOUND'
-    //     );
-    //   }
-    //   return event;
-    // },
+    events: async (root, { filters }, ctx: Context): Promise<Array<Event>> => {
+      const events = await ctx.dataSources.odoo.getEvents(filters || undefined);
+      return events.map(odooEventReducer);
+    },
+    event: async (root, { eventId }, ctx: Context): Promise<Event> => {
+      const odooEvent = await ctx.dataSources.odoo.getEventById(eventId);
+      if (!odooEvent) {
+        throw new ApolloError(
+          `The event with the id ${eventId} does not exist.`,
+          'NOT_FOUND'
+        );
+      }
+      return odooEventReducer(odooEvent);
+    },
   },
-  // Event: {
-  //   isFull: (event, { filters }, ctx): Promise<boolean> => {
-  //     if (!ctx.userId) {
-  //       throw new AuthenticationError('authentication required');
-  //     }
-  //     return ctx.dataSources.odooEvent.getEventQuotaStatus(event.id, filters);
-  //   },
-  //   isBooked: (event, args, ctx: Context): Promise<boolean> => {
-  //     if (!ctx.userId) {
-  //       throw new AuthenticationError('authentication required');
-  //     }
-  //     return ctx.dataSources.odooBooking.getBooking({
-  //       eventId: event.id,
-  //       userId: ctx.userId,
-  //     });
-  //   },
-  // },
+  Event: {
+    address: async (
+      { id }: Event,
+      args,
+      ctx: Context
+    ): Promise<Address | null> => {
+      const odooEvent = await ctx.dataSources.odoo.getEventById(id);
+      if (!(odooEvent && odooEvent.address_id)) {
+        return null;
+      }
+      const odooAddress = await ctx.dataSources.odoo.getAddressById(
+        odooEvent.address_id
+      );
+      if (!odooAddress) {
+        return null;
+      }
+      return odooAddressReducer(odooAddress);
+    },
+  },
+  Order: {
+    invoices: async (
+      { id }: Order,
+      args,
+      ctx: Context
+    ): Promise<Maybe<Invoice[]>> => {
+      const odooOrder = await ctx.dataSources.odoo.getOrderById(id);
+      if (!odooOrder) {
+        return null;
+      }
+      const odooInvoices = await ctx.dataSources.odoo.getInvoicesByIds(
+        odooOrder.invoice_ids
+      );
+      return odooInvoices.map(odooInvoiceReducer);
+    },
+  },
   Mutation: {
     async login(
       root,
@@ -124,7 +155,7 @@ export const resolvers: Resolvers = {
         ctx.jwtConfig.secret,
         ctx.jwtConfig.durationDays,
         {
-          userId: user.id,
+          odooUserId: user.id,
         }
       );
       return {

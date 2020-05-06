@@ -10,22 +10,6 @@ export default gql`
   scalar HexColor
   scalar URL
 
-  # Common
-
-  enum Lang {
-    fr
-    en
-  }
-
-  # type Coordinates {
-  #   latitude: String!
-  #   longitude: String!
-  # }
-
-  # type Location {
-  #   coordinates: Coordinates!
-  # }
-
   # Auth
 
   type LoginResult {
@@ -48,6 +32,18 @@ export default gql`
   #   endDate: DateTime!
   # }
 
+  # Address
+
+  type Address {
+    name: String
+    street: String
+    street2: String
+    town: String
+    state: String
+    zipCode: String
+    country: String
+  }
+
   # User
 
   type User {
@@ -69,9 +65,9 @@ export default gql`
 
   type Invoice {
     id: PositiveInt!
-    state: InvoiceState!
-    total: PositiveFloat!
-    date: DateTime!
+    state: InvoiceState
+    total: PositiveFloat
+    date: DateTime
     # taxReceipt: String
   }
 
@@ -81,7 +77,7 @@ export default gql`
     id: PositiveInt!
     date: DateTime!
     total: PositiveFloat!
-    invoices: [Invoice]!
+    invoices: [Invoice!]
   }
 
   # # Plan categories
@@ -130,55 +126,51 @@ export default gql`
   #   title: String!
   #   description: String!
   #   color: HexColor!
-  #   benefices: [ID]!
+  #   benefices: [PositiveInt]!
   #   prices: [PlanPrice]!
   #   options: [PlanOption]!
   #   file: URL!
   # }
 
-  # # Event types
+  # Event types
 
-  # type EventType {
-  #   id: PositiveInt!
-  #   title: String!
-  # }
+  type EventType {
+    id: PositiveInt!
+    title: String!
+  }
 
-  # # Events
+  # Events
 
-  # type Event {
-  #   id: PositiveInt!
-  #   categories: [PlanCategory]!
-  #   date: DateTime!
-  #   title: String!
-  #   image: URL!
-  #   type: EventType!
-  #   description: String!
-  #   location: Location!
-  #   isFull: Boolean!
-  #   isBooked: Boolean!
-  # }
+  type Event {
+    id: PositiveInt!
+    planCategoriesIds: [PositiveInt!]!
+    typeId: PositiveInt!
+    dateBegin: DateTime!
+    dateEnd: DateTime!
+    title: String!
+    image: URL
+    description: String!
+    address: Address
+  }
 
-  # input EventsFiltersInput {
-  #   eventTypes: [PositiveInt]
-  # }
+  input EventsFiltersInput {
+    eventTypes: [PositiveInt!]
+  }
 
   type Query {
     # User
     me: User!
-    myOrders(lang: Lang!): [Order]!
-    # myEvents(lang: Lang!): [Event]!
+    myOrders: [Order]!
+    # myEvents: [Event]!
 
-    # # Plan categories
-    # planCategories(
-    #   lang: Lang!
-    #   filters: PlanCategoriesFiltersInput
-    # ): [PlanCategory]!
-    # planCategory(lang: Lang!, categoryId: Int!): PlanCategory!
+    # # Plans
+    # planCategories: [PlanCategory]!
+    # plans(categoryId: PositiveInt!): [Plan]
 
-    # # Events
-    # eventTypes(lang: Lang!): [EventType]!
-    # events(lang: Lang!, filters: EventsFiltersInput): [Event]!
-    # event(lang: Lang!): Event!
+    # Events
+    eventTypes: [EventType!]!
+    events(filters: EventsFiltersInput): [Event]!
+    event(eventId: PositiveInt!): Event!
   }
 
   type Mutation {

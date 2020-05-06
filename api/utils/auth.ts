@@ -2,17 +2,29 @@ import { IncomingHttpHeaders } from 'http';
 import jsonwebtoken from 'jsonwebtoken';
 import { TokenPayload, DataSources, Context } from '../@types/types';
 import { User } from '../@types/resolverTypes';
+import { odooUserReducer } from '../reducers/odooUser';
+
+async function getUserByOdooUserId(
+  dataSources: DataSources<Context>,
+  odooUserId: number
+): Promise<User | null> {
+  const odooUser = await dataSources.odoo.getUserById(odooUserId);
+  if (!odooUser) {
+    return null;
+  }
+  return odooUserReducer(odooUser);
+}
 
 export async function login(
   credentials: { username: string; password: string },
   dataSources: DataSources<Context>
 ): Promise<User | null> {
   // Attempt to login to Odoo
-  let userId = await dataSources.odooUser.authenticate(credentials);
+  let odooUserId = await dataSources.odoo.authenticate(credentials);
 
   // The credentials matched, return the Odoo user
-  if (userId) {
-    return dataSources.odooUser.getUserById(userId);
+  if (odooUserId) {
+    return getUserByOdooUserId(dataSources, odooUserId);
   }
 
   // Attempt to login to WP
@@ -24,18 +36,18 @@ export async function login(
   }
 
   // Fetch Odoo user id with username
-  userId = await dataSources.odooUser.getUserIdByUsername(credentials.username);
+  odooUserId = await dataSources.odoo.getUserIdByUsername(credentials.username);
 
   // Odoo user does not exist
-  if (!userId) {
+  if (!odooUserId) {
     return null;
   }
 
   // Update Odoo user password
-  await dataSources.odooUser.updateUserPassword(userId, credentials.password);
+  await dataSources.odoo.updateUserPassword(odooUserId, credentials.password);
 
   // Return Odoo user
-  return dataSources.odooUser.getUserById(userId);
+  return getUserByOdooUserId(dataSources, odooUserId);
 }
 
 export function signToken(

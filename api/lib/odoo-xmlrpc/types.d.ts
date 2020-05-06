@@ -19,7 +19,11 @@ declare namespace OdooXmlrpc {
 
   export type Filters = (Filter | LogicalOperator)[];
 
-  export type Filter = [string, Operator, string | number];
+  export type Filter = [
+    string,
+    Operator,
+    string | number | string[] | number[]
+  ];
 
   export type Fields = string[];
 
