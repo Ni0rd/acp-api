@@ -47,6 +47,11 @@ export type OdooEvent = {
   event_type_id: number;
 };
 
+export type OdooEventType = {
+  id: number;
+  name: string;
+};
+
 export type OdooEventsFilters = {
   eventTypes: number[];
 };

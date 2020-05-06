@@ -16,6 +16,7 @@ import {
   Event,
   Address,
   Invoice,
+  EventType,
 } from './@types/resolverTypes';
 import { Context } from './@types/types';
 import { login, signToken } from './utils/auth';
@@ -23,6 +24,7 @@ import { odooUserReducer } from './reducers/odooUser';
 import { odooOrderReducer, odooInvoiceReducer } from './reducers/odooOrder';
 import { odooEventReducer } from './reducers/odooEvent';
 import { odooAddressReducer } from './reducers/odooAddress';
+import { odooEventTypeReducer } from './reducers/odooEventType';
 
 export const resolvers: Resolvers = {
   PositiveInt: PositiveIntResolver,
@@ -100,6 +102,10 @@ export const resolvers: Resolvers = {
         );
       }
       return odooEventReducer(odooEvent);
+    },
+    eventTypes: async (root, args, ctx: Context): Promise<Array<EventType>> => {
+      const events = await ctx.dataSources.odoo.getEventTypes();
+      return events.map(odooEventTypeReducer);
     },
   },
   User: {},

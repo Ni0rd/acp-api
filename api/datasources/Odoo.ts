@@ -7,6 +7,7 @@ import {
   OdooInvoice,
   OdooOrder,
   OdooUser,
+  OdooEventType,
 } from '../@types/odoo';
 
 export default class OdooDataSource<TContext> extends DataSource {
@@ -16,6 +17,7 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   private loaders!: {
     orders: DataLoader<number, OdooOrder>;
+    eventTypes: DataLoader<number, OdooEventType>;
     events: DataLoader<number, OdooEvent>;
     addresses: DataLoader<number, OdooAddress>;
     users: DataLoader<number, OdooUser>;
@@ -39,6 +41,9 @@ export default class OdooDataSource<TContext> extends DataSource {
     this.loaders = {
       orders: new DataLoader(async (keys) => {
         return this.getOrdersByIds([...keys]);
+      }),
+      eventTypes: new DataLoader(async (keys) => {
+        return this.getEventTypesByIds([...keys]);
       }),
       events: new DataLoader(async (keys) => {
         return this.getEventsByIds([...keys]);
@@ -73,6 +78,38 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   async getAddressById(addressId: number): Promise<OdooAddress | null> {
     return this.loaders.addresses.load(addressId);
+  }
+
+  // Event types
+
+  private async getEventTypesByIds(ids: number[]): Promise<OdooEventType[]> {
+    if (!ids.length) {
+      return [];
+    }
+    return this.odoo.executeReadAsAdmin({
+      model: 'event.type',
+      ids,
+      fields: ['id', 'name'],
+    }) as Promise<OdooEventType[]>;
+  }
+
+  async getEventTypesIds(): Promise<number[]> {
+    return this.odoo.executeSearchAsAdmin({
+      model: 'event.type',
+    });
+  }
+
+  async getEventTypes(): Promise<OdooEventType[]> {
+    const ids = await this.getEventTypesIds();
+
+    const eventTypes = await this.loaders.eventTypes.loadMany(ids);
+    return eventTypes.filter(
+      (eventType) => !(eventType instanceof Error)
+    ) as OdooEventType[];
+  }
+
+  async getEventTypeById(eventTypeId: number): Promise<OdooEventType> {
+    return this.loaders.eventTypes.load(eventTypeId);
   }
 
   // Events

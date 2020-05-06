@@ -104,4 +104,22 @@ describe('Odoo DataSource', () => {
       expect(mockExecuteReadAsAdmin).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('EventTypes', () => {
+    test('dedups requests', async () => {
+      await Promise.all([
+        odoo.getEventTypeById(1),
+        odoo.getEventTypeById(1),
+        odoo.getEventTypeById(2),
+        odoo.getEventTypeById(3),
+      ]);
+      expect(mockExecuteReadAsAdmin).toHaveBeenCalledTimes(1);
+    });
+
+    test('caches requests', async () => {
+      await odoo.getEventTypeById(1);
+      await odoo.getEventTypeById(1);
+      expect(mockExecuteReadAsAdmin).toHaveBeenCalledTimes(1);
+    });
+  });
 });

@@ -60,7 +60,7 @@ declare namespace OdooXmlrpc {
 
   export type SearchParams = {
     model: string;
-    filters: Filters;
+    filters?: Filters;
     options?: {
       offset?: number;
       limit?: number;
