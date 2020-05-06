@@ -1,4 +1,5 @@
 import { DataSource, DataSourceConfig } from 'apollo-datasource';
+import DataLoader from 'dataloader';
 import OdooXmlrpc from '../lib/odoo-xmlrpc';
 import {
   OdooAddress,
@@ -13,13 +14,42 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   public odoo!: OdooXmlrpc;
 
+  private loaders!: {
+    orders: DataLoader<number, OdooOrder>;
+    events: DataLoader<number, OdooEvent>;
+    addresses: DataLoader<number, OdooAddress>;
+    users: DataLoader<number, OdooUser>;
+  };
+
   constructor(odooConfig: OdooXmlrpc.Config) {
     super();
+    this.initOdoo(odooConfig);
+    this.initLoaders();
+  }
+
+  initOdoo(odooConfig: OdooXmlrpc.Config): void {
     this.odoo = new OdooXmlrpc(odooConfig);
   }
 
   initialize(config: DataSourceConfig<TContext>): void {
     this.context = config.context;
+  }
+
+  initLoaders(): void {
+    this.loaders = {
+      orders: new DataLoader(async (keys) => {
+        return this.getOrdersByIds([...keys]);
+      }),
+      events: new DataLoader(async (keys) => {
+        return this.getEventsByIds([...keys]);
+      }),
+      addresses: new DataLoader(async (keys) => {
+        return this.getAddressesByIds([...keys]);
+      }),
+      users: new DataLoader(async (keys) => {
+        return this.getUsersByIds([...keys]);
+      }),
+    };
   }
 
   authenticate(
@@ -41,9 +71,8 @@ export default class OdooDataSource<TContext> extends DataSource {
     }) as Promise<OdooAddress[]>;
   }
 
-  async getAddressById(id: number): Promise<OdooAddress | null> {
-    const [odooAddress] = await this.getAddressesByIds([id]);
-    return odooAddress;
+  async getAddressById(addressId: number): Promise<OdooAddress | null> {
+    return this.loaders.addresses.load(addressId);
   }
 
   // Events
@@ -74,12 +103,13 @@ export default class OdooDataSource<TContext> extends DataSource {
       odooFilters.push(['event_type_id', 'in', filters.eventTypes]);
     }
     const ids = await this.getEventsIds(odooFilters);
-    return this.getEventsByIds(ids);
+
+    const events = await this.loaders.events.loadMany(ids);
+    return events.filter((event) => !(event instanceof Error)) as OdooEvent[];
   }
 
-  async getEventById(id: number): Promise<OdooEvent | null> {
-    const [event] = await this.getEventsByIds([id]);
-    return event;
+  async getEventById(eventId: number): Promise<OdooEvent | null> {
+    return this.loaders.events.load(eventId);
   }
 
   // Invoices
@@ -90,6 +120,14 @@ export default class OdooDataSource<TContext> extends DataSource {
       ids,
       fields: ['id', 'invoice_payment_state', 'invoice_date', 'amount_total'],
     }) as Promise<OdooInvoice[]>;
+  }
+
+  async getOrderInvoices(orderId: number): Promise<OdooInvoice[] | null> {
+    const order = await this.getOrderById(orderId);
+    if (!order) {
+      return null;
+    }
+    return this.getInvoicesByIds(order.invoice_ids);
   }
 
   // Orders
@@ -114,12 +152,12 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   async getOrders(filters: OdooXmlrpc.Filters): Promise<OdooOrder[]> {
     const ids = await this.getOrdersIds(filters);
-    return this.getOrdersByIds(ids);
+    const orders = await this.loaders.orders.loadMany(ids);
+    return orders.filter((order) => !(order instanceof Error)) as OdooOrder[];
   }
 
-  async getOrderById(id: number): Promise<OdooOrder | null> {
-    const [order] = await this.getOrdersByIds([id]);
-    return order;
+  async getOrderById(orderId: number): Promise<OdooOrder | null> {
+    return this.loaders.orders.load(orderId);
   }
 
   getUserOrders(userId: number): Promise<OdooOrder[]> {
@@ -165,7 +203,6 @@ export default class OdooDataSource<TContext> extends DataSource {
   }
 
   async getUserById(userId: number): Promise<OdooUser | null> {
-    const [odooUser] = await this.getUsersByIds([userId]);
-    return odooUser;
+    return this.loaders.users.load(userId);
   }
 }

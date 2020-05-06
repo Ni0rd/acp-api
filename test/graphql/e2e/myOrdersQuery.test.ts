@@ -42,8 +42,7 @@ jest.mock('../../../api/datasources/Odoo', () => {
   return jest.fn().mockImplementation(() => {
     return {
       getUserOrders: jest.fn().mockResolvedValue([odooOrder]),
-      getOrderById: jest.fn().mockResolvedValue(odooOrder),
-      getInvoicesByIds: jest.fn().mockResolvedValue(odooInvoices),
+      getOrderInvoices: jest.fn().mockResolvedValue(odooInvoices),
     };
   });
 });

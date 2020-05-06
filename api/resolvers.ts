@@ -102,6 +102,7 @@ export const resolvers: Resolvers = {
       return odooEventReducer(odooEvent);
     },
   },
+  User: {},
   Event: {
     address: async (
       { id }: Event,
@@ -127,13 +128,10 @@ export const resolvers: Resolvers = {
       args,
       ctx: Context
     ): Promise<Maybe<Invoice[]>> => {
-      const odooOrder = await ctx.dataSources.odoo.getOrderById(id);
-      if (!odooOrder) {
+      const odooInvoices = await ctx.dataSources.odoo.getOrderInvoices(id);
+      if (!odooInvoices) {
         return null;
       }
-      const odooInvoices = await ctx.dataSources.odoo.getInvoicesByIds(
-        odooOrder.invoice_ids
-      );
       return odooInvoices.map(odooInvoiceReducer);
     },
   },
