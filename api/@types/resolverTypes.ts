@@ -99,9 +99,15 @@ export type Query = {
    __typename?: 'Query';
   me: User;
   myOrders: Array<Maybe<Order>>;
+  myOrder: Order;
   eventTypes: Array<EventType>;
   events: Array<Maybe<Event>>;
   event: Event;
+};
+
+
+export type QueryMyOrderArgs = {
+  orderId: Scalars['PositiveInt'];
 };
 
 
@@ -320,6 +326,7 @@ export interface PositiveIntScalarConfig extends GraphQLScalarTypeConfig<Resolve
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>,
   myOrders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType>,
+  myOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryMyOrderArgs, 'orderId'>>,
   eventTypes?: Resolver<Array<ResolversTypes['EventType']>, ParentType, ContextType>,
   events?: Resolver<Array<Maybe<ResolversTypes['Event']>>, ParentType, ContextType, RequireFields<QueryEventsArgs, never>>,
   event?: Resolver<ResolversTypes['Event'], ParentType, ContextType, RequireFields<QueryEventArgs, 'eventId'>>,

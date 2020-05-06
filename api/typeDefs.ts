@@ -161,6 +161,7 @@ export default gql`
     # User
     me: User!
     myOrders: [Order]!
+    myOrder(orderId: PositiveInt!): Order!
     # myEvents: [Event]!
 
     # # Plans

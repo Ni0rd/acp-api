@@ -205,6 +205,16 @@ export default class OdooDataSource<TContext> extends DataSource {
     return this.getOrders(filters);
   }
 
+  async getUserOrder(userId: number, orderId: number): Promise<OdooOrder> {
+    const filters: OdooXmlrpc.Filters = [
+      ['id', '=', orderId],
+      ['partner_id', '=', userId],
+      ['state', '=', 'sale'],
+    ];
+    const [order] = await this.getOrders(filters);
+    return order;
+  }
+
   // Users
 
   private async getUsersByIds(ids: number[]): Promise<OdooUser[]> {

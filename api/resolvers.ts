@@ -56,6 +56,22 @@ export const resolvers: Resolvers = {
       );
       return odooOrders.map(odooOrderReducer);
     },
+    myOrder: async (root, { orderId }, ctx: Context): Promise<Order> => {
+      if (!ctx.odooUserId) {
+        throw new AuthenticationError('authentication required');
+      }
+      const odooOrder = await ctx.dataSources.odoo.getUserOrder(
+        ctx.odooUserId,
+        orderId
+      );
+      if (!odooOrder) {
+        throw new ApolloError(
+          `The order with the id ${orderId} does not exist.`,
+          'NOT_FOUND'
+        );
+      }
+      return odooOrderReducer(odooOrder);
+    },
     // myEvents: (user, { lang }, ctx: Context) => {
     //   if (!ctx.userId) {
     //     throw new AuthenticationError('authentication required');

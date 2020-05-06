@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`myOrder query returns the User Order 1`] = `
+Object {
+  "data": Object {
+    "myOrder": Object {
+      "__typename": "Order",
+      "date": "2020-01-05T00:00:00.000Z",
+      "id": 1,
+      "invoices": Array [
+        Object {
+          "__typename": "Invoice",
+          "date": "2020-01-05T00:00:00.000Z",
+          "id": 1,
+          "state": "PAID",
+          "total": 100,
+        },
+        Object {
+          "__typename": "Invoice",
+          "date": "2020-01-05T00:00:00.000Z",
+          "id": 2,
+          "state": "PAID",
+          "total": 150,
+        },
+      ],
+      "total": 150,
+    },
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false,
+}
+`;
