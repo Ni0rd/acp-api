@@ -17,6 +17,8 @@ import {
   Address,
   Invoice,
   EventType,
+  Country,
+  CountryState,
 } from './@types/resolverTypes';
 import { Context } from './@types/types';
 import { login, signToken } from './utils/auth';
@@ -25,6 +27,8 @@ import { odooOrderReducer, odooInvoiceReducer } from './reducers/odooOrder';
 import { odooEventReducer } from './reducers/odooEvent';
 import { odooAddressReducer } from './reducers/odooAddress';
 import { odooEventTypeReducer } from './reducers/odooEventType';
+import { odooCountryReducer } from './reducers/odooCountry';
+import { odooCountryStateReducer } from './reducers/odooCountryState';
 
 export const resolvers: Resolvers = {
   PositiveInt: PositiveIntResolver,
@@ -72,19 +76,6 @@ export const resolvers: Resolvers = {
       }
       return odooOrderReducer(odooOrder);
     },
-    // myEvents: (user, { lang }, ctx: Context) => {
-    //   if (!ctx.userId) {
-    //     throw new AuthenticationError('authentication required');
-    //   }
-    //   return ctx.dataSources.odooEvent.getUserEvents(lang, ctx.userId);
-    // },
-    // planCategories: (
-    //   root,
-    //   { lang, filters },
-    //   ctx: Context
-    // ): Promise<PlanCategory[]> => {
-    //   return ctx.dataSources.odooPlanCategory.getPlanCategories(lang, filters);
-    // },
     // planCategory: async (
     //   root,
     //   { lang, categoryId },
@@ -101,9 +92,6 @@ export const resolvers: Resolvers = {
     //     );
     //   }
     //   return planCategory;
-    // },
-    // eventTypes: (root, { lang }, ctx: Context): Promise<Array<EventType>> => {
-    //   return ctx.dataSources.odooEventType.getEventTypes(lang);
     // },
     events: async (root, { filters }, ctx: Context): Promise<Array<Event>> => {
       const events = await ctx.dataSources.odoo.getEvents(filters || undefined);
@@ -125,6 +113,44 @@ export const resolvers: Resolvers = {
     },
   },
   User: {},
+  Address: {
+    state: async (
+      { id }: Address,
+      args,
+      ctx: Context
+    ): Promise<CountryState | null> => {
+      // TODO: refactor this in getAddressCountryState
+      const odooAddress = await ctx.dataSources.odoo.getAddressById(id);
+      if (!(odooAddress && odooAddress.state_id)) {
+        return null;
+      }
+      const odooState = await ctx.dataSources.odoo.getCountryStateById(
+        odooAddress.state_id
+      );
+      if (!odooState) {
+        return null;
+      }
+      return odooCountryStateReducer(odooState);
+    },
+    country: async (
+      { id }: Address,
+      args,
+      ctx: Context
+    ): Promise<Country | null> => {
+      // TODO: refactor this in getAddressCountry
+      const odooAddress = await ctx.dataSources.odoo.getAddressById(id);
+      if (!(odooAddress && odooAddress.country_id)) {
+        return null;
+      }
+      const odooCountry = await ctx.dataSources.odoo.getCountryById(
+        odooAddress.country_id
+      );
+      if (!odooCountry) {
+        return null;
+      }
+      return odooCountryReducer(odooCountry);
+    },
+  },
   Event: {
     address: async (
       { id }: Event,

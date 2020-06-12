@@ -32,16 +32,33 @@ export default gql`
   #   endDate: DateTime!
   # }
 
+  # Country State
+
+  type CountryState {
+    id: PositiveInt!
+    name: String
+    code: String
+  }
+
+  # Country
+
+  type Country {
+    id: PositiveInt!
+    name: String
+    code: String
+  }
+
   # Address
 
   type Address {
+    id: PositiveInt!
     name: String
     street: String
     street2: String
-    town: String
-    state: String
+    city: String
+    state: CountryState
     zipCode: String
-    country: String
+    country: Country
   }
 
   # User

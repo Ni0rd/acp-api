@@ -31,10 +31,22 @@ export type OdooAddress = {
   name: string;
   street: string;
   street2: string;
-  town: string;
-  state: string;
-  zipCode: string;
-  country: string;
+  city: string;
+  state_id: number;
+  zip: string;
+  country_id: number;
+};
+
+export type OdooCountryState = {
+  id: number;
+  name: string;
+  code: string;
+};
+
+export type OdooCountry = {
+  id: number;
+  name: string;
+  code: string;
 };
 
 export type OdooEvent = {

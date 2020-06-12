@@ -18,13 +18,28 @@ export type Scalars = {
 
 export type Address = {
    __typename?: 'Address';
+  id: Scalars['PositiveInt'];
   name?: Maybe<Scalars['String']>;
   street?: Maybe<Scalars['String']>;
   street2?: Maybe<Scalars['String']>;
-  town?: Maybe<Scalars['String']>;
-  state?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  state?: Maybe<CountryState>;
   zipCode?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
+  country?: Maybe<Country>;
+};
+
+export type Country = {
+   __typename?: 'Country';
+  id: Scalars['PositiveInt'];
+  name?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+};
+
+export type CountryState = {
+   __typename?: 'CountryState';
+  id: Scalars['PositiveInt'];
+  name?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
 };
 
 
@@ -218,6 +233,8 @@ export type ResolversTypes = ResolversObject<{
   Event: ResolverTypeWrapper<Event>,
   URL: ResolverTypeWrapper<Scalars['URL']>,
   Address: ResolverTypeWrapper<Address>,
+  CountryState: ResolverTypeWrapper<CountryState>,
+  Country: ResolverTypeWrapper<Country>,
   Mutation: ResolverTypeWrapper<{}>,
   LoginResult: ResolverTypeWrapper<LoginResult>,
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>,

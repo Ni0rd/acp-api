@@ -1,7 +1,12 @@
 import './env';
 import gql from 'graphql-tag';
 import { addGlobalMocks, initApollo } from './helpers';
-import { OdooEvent, OdooAddress } from '../../../api/@types/odoo';
+import {
+  OdooEvent,
+  OdooAddress,
+  OdooCountry,
+  OdooCountryState,
+} from '../../../api/@types/odoo';
 
 addGlobalMocks();
 const getClient = initApollo();
@@ -21,15 +26,28 @@ jest.mock('../../../api/datasources/Odoo', () => {
     name: 'address name',
     street: '1, rue de Montmartre',
     street2: '',
-    town: 'Paris',
-    state: '',
-    zipCode: '75001',
-    country: 'France',
+    city: 'Paris',
+    state_id: 123,
+    zip: '75001',
+    country_id: 123,
+  };
+  const odooCountry: OdooCountry = {
+    id: 123,
+    name: 'France',
+    code: 'fr',
+  };
+  const odooState: OdooCountryState = {
+    id: 123,
+    name: 'Ile de France',
+    code: 'xx',
   };
   return jest.fn().mockImplementation(() => {
     return {
       getEvents: jest.fn().mockResolvedValue([odooEvent]),
       getEventAddress: jest.fn().mockResolvedValue(odooAddress),
+      getAddressById: jest.fn().mockResolvedValue(odooAddress),
+      getCountryById: jest.fn().mockResolvedValue(odooCountry),
+      getCountryStateById: jest.fn().mockResolvedValue(odooState),
     };
   });
 });
@@ -46,16 +64,24 @@ describe('events query', () => {
             dateBegin
             dateEnd
             title
-            image
+            imageUrl
             description
             address {
               name
               street
               street2
-              town
-              state
+              city
+              state {
+                id
+                name
+                code
+              }
               zipCode
-              country
+              country {
+                id
+                name
+                code
+              }
             }
           }
         }

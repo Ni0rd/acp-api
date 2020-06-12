@@ -8,6 +8,8 @@ import {
   OdooOrder,
   OdooUser,
   OdooEventType,
+  OdooCountryState,
+  OdooCountry,
 } from '../@types/odoo';
 
 export default class OdooDataSource<TContext> extends DataSource {
@@ -21,6 +23,8 @@ export default class OdooDataSource<TContext> extends DataSource {
     events: DataLoader<number, OdooEvent>;
     addresses: DataLoader<number, OdooAddress>;
     users: DataLoader<number, OdooUser>;
+    countryState: DataLoader<number, OdooCountryState>;
+    country: DataLoader<number, OdooCountry>;
   };
 
   constructor(odooConfig: OdooXmlrpc.Config) {
@@ -54,6 +58,12 @@ export default class OdooDataSource<TContext> extends DataSource {
       users: new DataLoader(async (keys) => {
         return this.getUsersByIds([...keys]);
       }),
+      country: new DataLoader(async (keys) => {
+        return this.getCountriesByIds([...keys]);
+      }),
+      countryState: new DataLoader(async (keys) => {
+        return this.getCountryStatesByIds([...keys]);
+      }),
     };
   }
 
@@ -78,6 +88,44 @@ export default class OdooDataSource<TContext> extends DataSource {
 
   async getAddressById(addressId: number): Promise<OdooAddress | null> {
     return this.loaders.addresses.load(addressId);
+  }
+
+  // Country state
+
+  private async getCountryStatesByIds(
+    ids: number[]
+  ): Promise<OdooCountryState[]> {
+    if (!ids.length) {
+      return [];
+    }
+    return this.odoo.executeReadAsAdmin({
+      model: 'res.country.state',
+      ids,
+      fields: ['id', 'name', 'code'],
+    }) as Promise<OdooCountryState[]>;
+  }
+
+  async getCountryStateById(
+    countryStateId: number
+  ): Promise<OdooCountryState | null> {
+    return this.loaders.countryState.load(countryStateId);
+  }
+
+  // Country
+
+  private async getCountriesByIds(ids: number[]): Promise<OdooCountry[]> {
+    if (!ids.length) {
+      return [];
+    }
+    return this.odoo.executeReadAsAdmin({
+      model: 'res.country',
+      ids,
+      fields: ['id', 'name', 'code'],
+    }) as Promise<OdooCountryState[]>;
+  }
+
+  async getCountryById(countryId: number): Promise<OdooCountry | null> {
+    return this.loaders.country.load(countryId);
   }
 
   // Event types
@@ -121,7 +169,14 @@ export default class OdooDataSource<TContext> extends DataSource {
     return this.odoo.executeReadAsAdmin({
       model: 'event.event',
       ids,
-      fields: ['id', 'state', 'date_order', 'amount_total', 'invoice_ids'],
+      fields: [
+        'id',
+        'name',
+        'description',
+        'event_type_id',
+        'date_begin',
+        'date_end',
+      ],
     }) as Promise<OdooEvent[]>;
   }
 

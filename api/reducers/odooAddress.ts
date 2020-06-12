@@ -3,12 +3,11 @@ import { Address } from '../@types/resolverTypes';
 
 export function odooAddressReducer(odooAddress: OdooAddress): Address {
   return {
+    id: odooAddress.id,
     name: odooAddress.name,
     street: odooAddress.street,
     street2: odooAddress.street2,
-    town: odooAddress.town,
-    state: odooAddress.state,
-    zipCode: odooAddress.zipCode,
-    country: odooAddress.country,
+    city: odooAddress.city,
+    zipCode: odooAddress.zip,
   };
 }
