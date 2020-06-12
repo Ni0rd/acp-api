@@ -168,7 +168,7 @@ export default gql`
     dateBegin: DateTime!
     dateEnd: DateTime!
     title: String!
-    image: URL
+    imageUrl: URL
     description: String!
     address: Address
   }
