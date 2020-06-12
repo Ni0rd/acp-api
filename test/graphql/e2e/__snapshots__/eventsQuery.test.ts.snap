@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`events query returns the Events 1`] = `
+Object {
+  "data": Object {
+    "events": Array [
+      Object {
+        "__typename": "Event",
+        "address": Object {
+          "__typename": "Address",
+          "city": "Paris",
+          "country": Object {
+            "__typename": "Country",
+            "code": "fr",
+            "id": 123,
+            "name": "France",
+          },
+          "name": "address name",
+          "state": Object {
+            "__typename": "CountryState",
+            "code": "xx",
+            "id": 123,
+            "name": "Ile de France",
+          },
+          "street": "1, rue de Montmartre",
+          "street2": "",
+          "zipCode": "75001",
+        },
+        "dateBegin": "2020-01-05T00:00:00.000Z",
+        "dateEnd": "2020-01-05T00:00:00.000Z",
+        "description": "the event description",
+        "id": 1,
+        "imageUrl": null,
+        "planCategoriesIds": Array [],
+        "title": "fake event",
+        "typeId": 1,
+      },
+    ],
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false,
+}
+`;

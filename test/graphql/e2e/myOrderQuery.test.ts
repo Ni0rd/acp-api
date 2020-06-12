@@ -41,18 +41,18 @@ jest.mock('../../../api/datasources/Odoo', () => {
   ];
   return jest.fn().mockImplementation(() => {
     return {
-      getUserOrders: jest.fn().mockResolvedValue([odooOrder]),
+      getUserOrder: jest.fn().mockResolvedValue(odooOrder),
       getOrderInvoices: jest.fn().mockResolvedValue(odooInvoices),
     };
   });
 });
 
-describe('myOrders query', () => {
-  test('returns the User Orders', async () => {
+describe('myOrder query', () => {
+  test('returns the User Order', async () => {
     const query = {
       query: gql`
-        query {
-          myOrders {
+        query($orderId: PositiveInt!) {
+          myOrder(orderId: $orderId) {
             id
             date
             total
@@ -69,6 +69,9 @@ describe('myOrders query', () => {
         headers: {
           authorization: 'token 123abc',
         },
+      },
+      variables: {
+        orderId: 1,
       },
     };
     const response = await getClient().query(query);

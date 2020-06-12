@@ -12,7 +12,7 @@
   <a aria-label="Build status" href="https://github.com/amis-du-centre-pompidou/acp-api/actions?query=workflow%3A%22Continuous+Integration%22">
     <img src="https://img.shields.io/github/workflow/status/amis-du-centre-pompidou/acp-api/Continuous Integration?style=for-the-badge" />
   </a>
-  <a aria-label="Dependencies status" href="https://github.com/amis-du-centre-pompidou/acp-api/actions?query=workflow%3A%22Continuous+Integration%22">
+  <a aria-label="Dependencies status" href="https://github.com/amis-du-centre-pompidou/acp-api">
     <img src="https://img.shields.io/david/amis-du-centre-pompidou/acp-api?style=for-the-badge" />
   </a>  
 </p>

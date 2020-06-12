@@ -19,7 +19,11 @@ declare namespace OdooXmlrpc {
 
   export type Filters = (Filter | LogicalOperator)[];
 
-  export type Filter = [string, Operator, string | number];
+  export type Filter = [
+    string,
+    Operator,
+    string | number | string[] | number[]
+  ];
 
   export type Fields = string[];
 
@@ -56,7 +60,7 @@ declare namespace OdooXmlrpc {
 
   export type SearchParams = {
     model: string;
-    filters: Filters;
+    filters?: Filters;
     options?: {
       offset?: number;
       limit?: number;
@@ -81,14 +85,18 @@ declare namespace OdooXmlrpc {
     model: string;
     method: Method;
     data: unknown;
-    options?: {};
+    options?: {
+      [key: string]: string | string[] | number | number[];
+    };
   };
 
   export type KwAsAdminParams = {
     model: string;
     method: Method;
     data: unknown;
-    options?: {};
+    options?: {
+      [key: string]: string | string[] | number | number[];
+    };
   };
 
   export type KwResponse = SearchResponse | ReadResponse;

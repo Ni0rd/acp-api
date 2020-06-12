@@ -18,3 +18,5 @@ config:
     EmailAddress: string
     HexColor: string
     URL: string
+  config:
+    maybeValue: T | null | undefined    
