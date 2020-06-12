@@ -8,7 +8,7 @@ export function odooEventReducer(odooEvent: OdooEvent): Event {
     description: odooEvent.description,
     planCategoriesIds: [],
     typeId: odooEvent.event_type_id,
-    image: null,
+    imageUrl: null,
     dateBegin: new Date(odooEvent.date_begin),
     dateEnd: new Date(odooEvent.date_end),
   };
