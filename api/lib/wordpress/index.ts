@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 export async function login(
   apiEndpoint: string,
   params: { username: string; password: string }
-): Promise<string | false> {
+): Promise<boolean> {
   const url = `${apiEndpoint}/jwt-auth/v1/token`;
 
   const response = await fetch(url, {
@@ -16,5 +16,5 @@ export async function login(
     return false;
   }
 
-  return response.json();
+  return true;
 }

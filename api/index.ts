@@ -18,12 +18,15 @@ const apolloServer = new ApolloServer({
 
 // Apollo cannot handle OPTIONS requests, ignore them
 // @see: https://github.com/apollographql/apollo-server/issues/2473
-const corsHandler = (req: IncomingMessage, res: ServerResponse): void => {
+const corsHandler = async (
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> => {
   if (req.method === 'OPTIONS') {
     res.end();
     return;
   }
-  apolloServer.createHandler()(req, res);
+  await apolloServer.createHandler()(req, res);
 };
 
 const handler = microCors()(corsHandler);

@@ -20,6 +20,9 @@ import {
   EventType,
   Country,
   CountryState,
+  QueryMyOrderArgs,
+  QueryEventsArgs,
+  QueryEventArgs,
 } from './@types/resolverTypes';
 import { Context } from './@types/types';
 import { login, signToken } from './utils/auth';
@@ -40,7 +43,7 @@ export const resolvers: Resolvers = {
   URL: URLResolver,
   PhoneNumber: PhoneNumberResolver,
   Query: {
-    me: async (root, args, ctx: Context): Promise<User> => {
+    me: async (root: unknown, args: unknown, ctx: Context): Promise<User> => {
       if (!ctx.odooUserId) {
         throw new AuthenticationError('authentication required');
       }
@@ -53,7 +56,11 @@ export const resolvers: Resolvers = {
       }
       return odooUserReducer(odooUser);
     },
-    myOrders: async (root, args, ctx: Context): Promise<Order[]> => {
+    myOrders: async (
+      root: unknown,
+      args: unknown,
+      ctx: Context
+    ): Promise<Order[]> => {
       if (!ctx.odooUserId) {
         throw new AuthenticationError('authentication required');
       }
@@ -62,7 +69,11 @@ export const resolvers: Resolvers = {
       );
       return odooOrders.map(odooOrderReducer);
     },
-    myOrder: async (root, { orderId }, ctx: Context): Promise<Order> => {
+    myOrder: async (
+      root: unknown,
+      { orderId }: QueryMyOrderArgs,
+      ctx: Context
+    ): Promise<Order> => {
       if (!ctx.odooUserId) {
         throw new AuthenticationError('authentication required');
       }
@@ -94,11 +105,19 @@ export const resolvers: Resolvers = {
     //   }
     //   return planCategory;
     // },
-    events: async (root, { filters }, ctx: Context): Promise<Array<Event>> => {
+    events: async (
+      root: unknown,
+      { filters }: QueryEventsArgs,
+      ctx: Context
+    ): Promise<Array<Event>> => {
       const events = await ctx.dataSources.odoo.getEvents(filters || undefined);
       return events.map(odooEventReducer);
     },
-    event: async (root, { eventId }, ctx: Context): Promise<Event> => {
+    event: async (
+      root: unknown,
+      { eventId }: QueryEventArgs,
+      ctx: Context
+    ): Promise<Event> => {
       const odooEvent = await ctx.dataSources.odoo.getEventById(eventId);
       if (!odooEvent) {
         throw new ApolloError(
@@ -108,7 +127,11 @@ export const resolvers: Resolvers = {
       }
       return odooEventReducer(odooEvent);
     },
-    eventTypes: async (root, args, ctx: Context): Promise<Array<EventType>> => {
+    eventTypes: async (
+      root: unknown,
+      args: unknown,
+      ctx: Context
+    ): Promise<Array<EventType>> => {
       const events = await ctx.dataSources.odoo.getEventTypes();
       return events.map(odooEventTypeReducer);
     },
@@ -117,7 +140,7 @@ export const resolvers: Resolvers = {
   Address: {
     state: async (
       { id }: Address,
-      args,
+      args: unknown,
       ctx: Context
     ): Promise<CountryState | null> => {
       // TODO: refactor this in getAddressCountryState
@@ -135,7 +158,7 @@ export const resolvers: Resolvers = {
     },
     country: async (
       { id }: Address,
-      args,
+      args: unknown,
       ctx: Context
     ): Promise<Country | null> => {
       // TODO: refactor this in getAddressCountry
@@ -155,7 +178,7 @@ export const resolvers: Resolvers = {
   Event: {
     address: async (
       { id }: Event,
-      args,
+      args: unknown,
       ctx: Context
     ): Promise<Address | null> => {
       const odooAddress = await ctx.dataSources.odoo.getEventAddress(id);
@@ -168,7 +191,7 @@ export const resolvers: Resolvers = {
   Order: {
     invoices: async (
       { id }: Order,
-      args,
+      args: unknown,
       ctx: Context
     ): Promise<Maybe<Invoice[]>> => {
       const odooInvoices = await ctx.dataSources.odoo.getOrderInvoices(id);
@@ -180,7 +203,7 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     async login(
-      root,
+      root: unknown,
       args: { email: string; password: string },
       ctx: Context
     ): Promise<LoginResult> {

@@ -4,9 +4,11 @@ import OdooXmlrpc from '../../../../api/lib/odoo-xmlrpc';
 
 jest.mock('../../../../api/lib/odoo-xmlrpc');
 
-const mockExecuteReadAsAdmin = jest.fn().mockImplementation(({ ids }) => {
-  return Promise.resolve(ids.map(() => ({})));
-});
+const mockExecuteReadAsAdmin = jest
+  .fn()
+  .mockImplementation(({ ids }: { ids: number[] }) => {
+    return Promise.resolve(ids.map(() => ({})));
+  });
 
 (OdooXmlrpc as jest.Mock).mockImplementation(() => {
   return {

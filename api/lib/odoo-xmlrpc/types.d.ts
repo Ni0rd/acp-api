@@ -85,14 +85,18 @@ declare namespace OdooXmlrpc {
     model: string;
     method: Method;
     data: unknown;
-    options?: {};
+    options?: {
+      [key: string]: string | string[] | number | number[];
+    };
   };
 
   export type KwAsAdminParams = {
     model: string;
     method: Method;
     data: unknown;
-    options?: {};
+    options?: {
+      [key: string]: string | string[] | number | number[];
+    };
   };
 
   export type KwResponse = SearchResponse | ReadResponse;
