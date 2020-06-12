@@ -18,7 +18,8 @@ jest.mock('../../../api/utils/auth', () => {
 jest.mock('../../../api/datasources/Odoo', () => {
   const odooUser: OdooUser = {
     id: 1,
-    name: 'John Doe',
+    firstname: 'John',
+    lastname: 'Doe',
     email: 'john.doe@example.net',
   };
   return jest.fn().mockImplementation(() => {

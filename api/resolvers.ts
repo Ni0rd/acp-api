@@ -6,6 +6,7 @@ import {
   EmailAddressResolver,
   URLResolver,
   HexColorCodeResolver,
+  PhoneNumberResolver,
 } from 'graphql-scalars';
 import {
   Maybe,
@@ -37,6 +38,7 @@ export const resolvers: Resolvers = {
   EmailAddress: EmailAddressResolver,
   HexColor: HexColorCodeResolver,
   URL: URLResolver,
+  PhoneNumber: PhoneNumberResolver,
   Query: {
     me: async (root, args, ctx: Context): Promise<User> => {
       if (!ctx.odooUserId) {
@@ -78,11 +80,10 @@ export const resolvers: Resolvers = {
     },
     // planCategory: async (
     //   root,
-    //   { lang, categoryId },
+    //   { categoryId },
     //   ctx: Context
     // ): Promise<PlanCategory> => {
-    //   const planCategory = await ctx.dataSources.odooPlanCategory.getPlanCategoryById(
-    //     lang,
+    //   const planCategory = await ctx.dataSources.odoo.getPlanCategoryById(
     //     categoryId
     //   );
     //   if (!planCategory) {

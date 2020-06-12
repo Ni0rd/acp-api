@@ -7,6 +7,7 @@ export default gql`
   scalar PositiveFloat
   scalar DateTime
   scalar EmailAddress
+  scalar PhoneNumber
   scalar HexColor
   scalar URL
 
@@ -68,7 +69,9 @@ export default gql`
     firstname: String!
     lastname: String!
     email: EmailAddress!
+    phone: PhoneNumber
     # subscription: Subscription
+    addresses: [Address!]
   }
 
   # Invoices

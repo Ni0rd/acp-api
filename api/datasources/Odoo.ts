@@ -289,7 +289,7 @@ export default class OdooDataSource<TContext> extends DataSource {
     return this.odoo.executeReadAsAdmin({
       model: 'res.users',
       ids,
-      fields: ['id', 'name', 'email'],
+      fields: ['id', 'firstname', 'lastname', 'email'],
     }) as Promise<OdooUser[]>;
   }
 

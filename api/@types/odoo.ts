@@ -3,7 +3,8 @@ export type OdooLang = 'fr' | 'en';
 export type OdooUser = {
   id: number;
   email: string;
-  name: string;
+  firstname: string;
+  lastname: string;
 };
 
 export type OdooInvoiceState = 'not_paid' | 'in_payment' | 'paid';
